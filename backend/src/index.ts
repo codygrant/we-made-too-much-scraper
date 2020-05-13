@@ -3,10 +3,13 @@ import * as Router from 'koa-router';
 
 import * as logger from 'koa-logger';
 
+const scraper = require('./scraper');
 
 const app       = new Koa();
 const router    = new Router();
 const PORT      = 3000;
+
+scraper.runScraper();
 
 // Middleware
 app.use(logger());
@@ -15,7 +18,7 @@ app.use(logger());
 app.use(router.routes()).use(router.allowedMethods());
 
 router.get('/*', async (ctx: Koa.Context, next: () => Promise<any>) => {
-    ctx.body = { message: "GET request" };
+    ctx.body = { message: "Welcome to We Made Too Much Watcher" };
     await next();
 });
 
