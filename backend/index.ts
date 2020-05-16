@@ -1,14 +1,20 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
-
 import * as logger from 'koa-logger';
 
-const scraper = require('./scraper');
+require('dotenv').config()
+
+const scraper = require('./util/scraper');
+const db = require('./database/db');
 
 const app       = new Koa();
 const router    = new Router();
-const PORT      = 3000;
+const PORT      = process.env.PORT || 3000;
 
+// Database
+db.connect();
+
+// Scheduled Scraper
 scraper.runScraper();
 
 // Middleware
