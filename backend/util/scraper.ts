@@ -55,9 +55,9 @@ const parseHtml = (html: any) => {
 }
 
 const runScraper = () => {
-    vo(run)((err: Error) => {
-        console.log(err);
-    })
+    // vo(run)((err: Error) => {
+    //     console.log(err);
+    // })
 }
 
 module.exports = { runScraper };
