@@ -1,4 +1,6 @@
 import * as cheerio from 'cheerio';
+import { Products } from '../models/products';
+import { Product } from '../models/product';
 
 const vo = require('vo');
 const Nightmare = require('nightmare');
@@ -31,33 +33,45 @@ const run = function* () {
     // continuously scroll until we've reached the bottom
     // lululemon lazyloads their products so the entire DOM isn't
     // there on page load
-    let previousHeight, currentHeight = 0;    
-    while (previousHeight !== currentHeight) {
-        // TODO: check for pagination button and click until all products loaded
-        previousHeight = currentHeight;
-        currentHeight = yield nightmare.evaluate(() => {
-            return document.body.scrollHeight;
-        })
-        yield nightmare.scrollTo(currentHeight, 0)
-            .wait(3000);
-    }
+    // let previousHeight, currentHeight = 0;    
+    // while (previousHeight !== currentHeight) {
+    //     // TODO: check for pagination button and click until all products loaded
+    //     previousHeight = currentHeight;
+    //     currentHeight = yield nightmare.evaluate(() => {
+    //         return document.body.scrollHeight;
+    //     })
+    //     yield nightmare.scrollTo(currentHeight, 0)
+    //         .wait(3000);
+    // }
     yield nightmare.evaluate(() => document.querySelector('body').innerHTML)
         .then((html: any) => {
             parseHtml(html);
         });
+    yield nightmare.end();
 }
 
 const parseHtml = (html: any) => {
     const $ = cheerio.load(html);
-    $('h3.product-name').each((index: number, element: CheerioElement) => {
-        console.log($(element).html());
+    const allProducts = new Products;
+    $('.product-list-item').each((index: number, element: CheerioElement) => {
+        let product = new Product;
+
+        // <a> tag
+        const linkAttributes = $(element).find('.product-tile__image-link')[0].attribs;
+        product.skuid = linkAttributes['data-skuid'];
+        product.url = linkAttributes.href;
+        // console.log($(element).find('.product-tile__image-link')[0].attribs['data-skuid']);
+        console.log(product);
+        
+        allProducts.products.push(product);
     });
 }
 
 const runScraper = () => {
-    // vo(run)((err: Error) => {
-    //     console.log(err);
-    // })
+    vo(run)((err: Error) => {
+        if (err)
+            console.log(err);
+    })
 }
 
 module.exports = { runScraper };

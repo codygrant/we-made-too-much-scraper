@@ -7,4 +7,8 @@ export class Products {
     gender: Gender;
     category: Category;
     products: Product[];
+
+    constructor() {
+        this.products = [];
+    }
 }
