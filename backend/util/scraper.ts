@@ -56,13 +56,21 @@ const parseHtml = (html: any) => {
     $('.product-list-item').each((index: number, element: CheerioElement) => {
         let product = new Product;
 
-        // <a> tag
-        const linkAttributes = $(element).find('.product-tile__image-link')[0].attribs;
-        product.skuid = linkAttributes['data-skuid'];
-        product.url = linkAttributes.href;
-        // console.log($(element).find('.product-tile__image-link')[0].attribs['data-skuid']);
+        // <a> tag for URL and SKU
+        const linkAttributes = $(element).find('.product-tile__image-link')[0];
+        if (linkAttributes == undefined) {
+            return;
+        }
+        product.skuid = linkAttributes.attribs['data-skuid'];
+        product.url = linkAttributes.attribs.href;
+
+        // sale and regular prices
+        const priceElements = $(element).find('.price-1SDQy').contents();
+        product.sale_price = parseFloat(priceElements.eq(1).text().substring(1));
+        product.original_price = parseFloat(priceElements.eq(4).contents().eq(1).text().substring(1));
+
         console.log(product);
-        
+
         allProducts.products.push(product);
     });
 }
